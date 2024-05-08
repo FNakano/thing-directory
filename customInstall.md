@@ -11,8 +11,12 @@ Esse arquivo representa a instalção customizada do Thing-Directory, de acordo 
 Antes de rodar instale na sua máquina:
 
 - [Go](https://go.dev/dl/)
-- [Keycloak](https://www.keycloak.org/downloads) (pela aplicação em si \*necessário baixar o jdk para rodar\*, ou como um conteiner Docker) 
+   - For Ubuntu (18.04, 20.04, 22.04) users: https://go.dev/wiki/Ubuntu
+   ![](./Captura%20de%20tela%20de%202024-05-08%2013-52-49.png)
+- [Keycloak](https://www.keycloak.org/downloads) (pela aplicação em si \*necessário baixar o jdk para rodar\*, ou como um conteiner Docker *como você fez na sua instalação?*) 
+   ![](./Captura%20de%20tela%20de%202024-05-08%2014-02-20.png)
 - [Postman](https://www.postman.com/downloads/)
+   [](./Captura%20de%20tela%20de%202024-05-08%2014-06-50.png)
 
 ### First steps
 
@@ -27,9 +31,12 @@ Após isso, <i>build</i> apartir da root do projeto, execute para rodar, buildar
     go run . --conf=sample_conf/thing-directory.json
 ```
 
+![](./Captura%20de%20tela%20de%202024-05-08%2014-10-16.png)
+
+
 Após isso, você deve ser capaz de inicializar a aplicação, feche-a por enquanto.
 
-Perçeba que ele utiliza o arquivo sample_conf como base para rodar inicialmente, entretanto o diretório padrão que a aplicação utiliza é denominado <b>conf</b>.
+Note que ele utiliza o arquivo sample_conf como base para rodar inicialmente, entretanto o diretório padrão que a aplicação utiliza é denominado <b>conf</b>.
 
 Ainda na root, execute:
 
@@ -37,6 +44,7 @@ Ainda na root, execute:
     mkdir conf
     cp ./sample_conf/thing-directory.json ./conf
 ```
+*obs.:* Aparentemente quando executa o linksmart pela primeira vez ele cria o diretório `conf` ![](./Captura%20de%20tela%20de%202024-05-08%2014-15-27.png)
 
 Com isso você conseguirá rodar normalmente, utilizando ```go run```, entretanto o servidor está com as configurações todas desabilitadas, explicarei como habilitar cada parte:
 
@@ -47,6 +55,9 @@ Antes de tudo, com a aplicação rodando já conseguimos verificar o funcionamen
 Vale a pena ressaltar que a documentação da API está presente em [documentação](https://linksmart.eu/swagger-ui/dist/?url=https://raw.githubusercontent.com/linksmart/thing-directory/master/apidoc/openapi-spec.yml).
 
 Entretanto, explicitarei alguns detalhes que podem não ser muitos claro. Usaremos o endereço 0.0.0.0 e a porta 8081 como padrão da aplicação.
+
+Acessei a URL com o navegador, deu 405-Unauthorized. Sinal que está funcionando... ![](./Captura%20de%20tela%20de%202024-05-08%2014-22-01.png)
+
 
 Alguns os endpoints de <b>Registration API</b>:
 
@@ -99,6 +110,10 @@ BODY
   "security": "basic_sc"
 }
 ```
+
+*obs.*: tanto get quanto post em 0.0.0.0:8081/things resulta em 401-Unauthorized. [captura GET](./Captura%20de%20tela%20de%202024-05-08%2014-24-50.png) [captura POST](./Captura%20de%20tela%20de%202024-05-08%2014-32-11.png)
+
+
 
 GET/PUT/PATCH/DELETE 
 - http://0.0.0.0:8081/things/{id}:
