@@ -44,7 +44,7 @@ Ainda na root, execute:
     mkdir conf
     cp ./sample_conf/thing-directory.json ./conf
 ```
-*obs.:* Aparentemente quando executa o linksmart pela primeira vez ele cria o diretório `conf` ![](./Captura%20de%20tela%20de%202024-05-08%2014-15-27.png)
+*obs.:* Seu fork contém um diretório conf. Não sei se é o que já está no seu fork ou se quando executa o linksmart pela primeira vez ele cria o diretório `conf` ![](./Captura%20de%20tela%20de%202024-05-08%2014-15-27.png) . Por que substituir o arquivo que já está no conf por esse do sample_conf? É ele que configura para autorizar os acessos locais?
 
 Com isso você conseguirá rodar normalmente, utilizando ```go run```, entretanto o servidor está com as configurações todas desabilitadas, explicarei como habilitar cada parte:
 
