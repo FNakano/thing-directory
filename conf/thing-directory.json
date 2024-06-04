@@ -28,7 +28,7 @@
     "auth": {
       "enabled": true,
       "provider": "keycloak",
-      "providerURL": "http://localhost:8080/realms/realm",
+      "providerURL": "http://localhost:8080/realms/myrealm",
       "clientID": "account",
       "basicEnabled": false,
       "authorization": {

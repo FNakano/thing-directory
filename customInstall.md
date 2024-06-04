@@ -1,12 +1,12 @@
 ## ! This repository was forked from https://github.com/linksmart/thing-directory, I am only making custom changes on the code for academic usage, all credits to the authors.
 
-## Thing Directory custom install
+# Thing Directory custom install
 
 A priori, por convenção esta documentação estará presente em português, entretanto será disponibilizada em inglês ao fim do projeto.
 
 Esse arquivo representa a instalção customizada do Thing-Directory, de acordo com a documentação de instalação padrão presente no README desse repositório, caso ache necessário direi para olhar a documentação dos autores, entretanto explicarei detalhes que não forem claros. Qualquer coisa, consulte a [documentação original](./README.md).
 
-### Pré requisitos
+# Pré requisitos
 
 Antes de rodar instale na sua máquina:
 
@@ -18,7 +18,7 @@ Antes de rodar instale na sua máquina:
 - [Postman](https://www.postman.com/downloads/)
    [](./Captura%20de%20tela%20de%202024-05-08%2014-06-50.png)
 
-### First steps
+# First steps
 
 Primeiramente, clone esse repositório na sua máquina.
 
@@ -30,6 +30,19 @@ Após isso, <i>build</i> apartir da root do projeto, execute para rodar, buildar
     go build
     go run . --conf=sample_conf/thing-directory.json
 ```
+
+Estes comandos iniciam o thing-directory com a configuração contida em `sample_conf/thing-directory.json`. No `sample_conf/thing-directory.json` de linksmart (https://github.com/linksmart/thing-directory/blob/master/sample_conf/thing-directory.json) 
+
+```
+...
+"auth:": { 
+  "enabled": false
+  ...
+```
+
+Esta configuração permite acessar os recursos do diretório de coisas sem autorização. Um dos focos deste projeto é usar autorização o que implica em personalizar a configuração.
+
+ Para personalizar a configuração, cria-se o diretório `conf`, copia-se o arquivo `thing-directory.json` e modifica-se esta cópia, como mostrado no fragmento de código logo em seguida.
 
 ![](./Captura%20de%20tela%20de%202024-05-08%2014-10-16.png)
 
@@ -44,11 +57,12 @@ Ainda na root, execute:
     mkdir conf
     cp ./sample_conf/thing-directory.json ./conf
 ```
-*obs.:* Seu fork contém um diretório conf. Não sei se é o que já está no seu fork ou se quando executa o linksmart pela primeira vez ele cria o diretório `conf` ![](./Captura%20de%20tela%20de%202024-05-08%2014-15-27.png) . Por que substituir o arquivo que já está no conf por esse do sample_conf? É ele que configura para autorizar os acessos locais?
 
-Com isso você conseguirá rodar normalmente, utilizando ```go run```, entretanto o servidor está com as configurações todas desabilitadas, explicarei como habilitar cada parte:
+*obs.:* O fork de narcisoleedev contém um diretório `conf` parcialmente configurado para usar como servidor de autorização o `keycloak` . <!-- Não sei se é o que já está no seu fork ou se quando executa o linksmart pela primeira vez ele cria o diretório `conf` ![](./Captura%20de%20tela%20de%202024-05-08%2014-15-27.png) . Por que substituir o arquivo que já está no conf por esse do sample_conf? É ele que configura para autorizar os acessos locais? -->
 
-### API
+Com isso você conseguirá executar o diretório de coisas utilizando `go run .`. Entretanto, o servidor está com as configurações todas desabilitadas, explicarei como habilitar cada parte:
+
+## API
 
 Antes de tudo, com a aplicação rodando já conseguimos verificar o funcionamento do Thing Directory, para isso usaremos o <b>Postman</b> para testar os endpoints.
 
@@ -56,8 +70,7 @@ Vale a pena ressaltar que a documentação da API está presente em [documentaç
 
 Entretanto, explicitarei alguns detalhes que podem não ser muitos claro. Usaremos o endereço 0.0.0.0 e a porta 8081 como padrão da aplicação.
 
-Acessei a URL com o navegador, deu 405-Unauthorized. Sinal que está funcionando... ![](./Captura%20de%20tela%20de%202024-05-08%2014-22-01.png)
-
+Acessei a URL com o navegador, deu 405-Unauthorized. Sinal que está funcionando... ![](./Captura%20de%20tela%20de%202024-05-08%2014-22-01.png). Mais tarde, com a ajuda de narcisoleedev, vi que o arquivo de configuração, inclusive de `sample_conf` foi ajustado para usar autorização. Restaurei o arquivo de configuração de linksmart e isso permitiu usar a API em conformidade com o mostrado abaixo.
 
 Alguns os endpoints de <b>Registration API</b>:
 
@@ -111,8 +124,11 @@ BODY
 }
 ```
 
-*obs.*: tanto get quanto post em 0.0.0.0:8081/things resulta em 401-Unauthorized. [captura GET](./Captura%20de%20tela%20de%202024-05-08%2014-24-50.png) [captura POST](./Captura%20de%20tela%20de%202024-05-08%2014-32-11.png)
+*obs.*: tanto get quanto post em 0.0.0.0:8081/things resulta em 401-Unauthorized. [captura GET](./Captura%20de%20tela%20de%202024-05-08%2014-24-50.png) [captura POST](./Captura%20de%20tela%20de%202024-05-08%2014-32-11.png).  Mais tarde, com a ajuda de narcisoleedev, vi que o arquivo de configuração, inclusive de `sample_conf` foi ajustado para usar autorização. Restaurei o arquivo de configuração de linksmart e isso permitiu usar a API 
 
+Usando a configuração do serviço de diretório de coisas **sem autorização**, digitando na barra de endereço do navegador `http://0.0.0.0:8081/things` obtive a captura de tela abaixo:
+	
+![](./Captura%20de%20tela%20de%202024-06-04%2019-12-28.png)
 
 
 GET/PUT/PATCH/DELETE 
@@ -158,6 +174,8 @@ Loaded JSON Schemas: [./conf/jsonSchema.json]
 
 Agora, caso você insira uma TD fora dos padrões, você receberá resposta 401, caso esteja tudo certo 200 normalmente.
 
+**nota**: no fork de narcisoleedev (e neste também) o diretório `conf` contém os arquivos que configuram o serviço de diretório de coisas para aplicar os critérios de validação.
+
 ### DNS/SD
 
 Para maiores detalhes aconselha-se olhar a documentação original nessa parte, presente em [DNS-SD registration](https://github.com/linksmart/thing-directory/wiki/Discovery-with-DNS-SD).
@@ -181,6 +199,7 @@ Com isso, você habilitará o DNS/SD na sua rede. Confirme rodando a aplicação
 DNS-SD: registering as "LinkSmart Thing Directory._wot._tcp.local.", subtype: _directory
 DNS-SD: publish interfaces not set. Will register to all interfaces with multicast support.
 ```
+**nota**: no fork de narcisoleedev (e neste também) o diretório `conf` contém os arquivos que configuram o serviço de diretório de coisas para aplicar os critérios de validação.
 
 ### HTTP Config
 
@@ -205,11 +224,32 @@ Essa parte deve-se prestar bastante atenção para habilitar a autenticação no
 Primeiro baixe o keycloak e instale conforme a documentação na maneira que você queira instalar.
 
 Para [*on bare metal*](https://www.keycloak.org/getting-started/getting-started-zip)
+
 *** quando criar o cliente, habilite o cliente mo modo de desenvolvimento protegido***
 
+Requisito: Keycloak usa openjdk-17. Isto obrigou-me a instalar diferentes versões de Java e um chaveador de versões. O comando para chaver versões é `sudo update-alternatives --config java` e `sudo update-alternatives --config javac`. A documentação em que me baseei é: https://linuxconfig.org/how-to-install-and-switch-java-versions-on-ubuntu-linux
+
+Após todos os passos (ié instalar, criar o usuário administrador, criar o *realm* criar usuário e cliente do *realm*, sem modificar os nomes, ié, myrealm, myuser, myclient). O serviço de autorização está pronto para ser usado e é compatível com o serviço de diretório de coisas (note que em `conf/thing-directory.json temos:
+	
+```json
+"auth": {
+      "enabled": true,
+      "provider": "keycloak",
+      "providerURL": "http://localhost:8080/realms/myrealm",
+      "clientID": "account",
+
+```
+
+OAuth é um protocolo de autorização baseado em *tokens* (https://auth0.com/intro-to-iam/what-is-oauth-2). Gerar uma requisição com *payload* (ié um POST) e token de autorização é facilitado pela aplicação Postman que pode ser baixada em https://www.postman.com/downloads/
+
+Abra o Postman e faça uma requisição para o serviço de diretório *com token de autorização*. Por exemplo, selecione o tipo de requisição para GET, preencha a URL com 0.0.0.0:8081/things (URL do serviço de diretório de coisas); Na aba `authorization` (abaixo da URL) preencha os campos `callback URL` com https://www.keycloak.org/app/* , `auth URL` com http://localhost:8080/realms/myrealm/protocol/openid-connect/auth, `access token URL` com http://localhost:8080/realms/myrealm/protocol/openid-connect/token `Client ID` com myclient, `Scope` com email openid profile (as três palavras), role até o fim da aba de configuração de token e clique no botão `Get New Access Token`. Uma janela se abrirá, mostrando uma página do serviço de autorização (ié é uma página do keycloak local - url localhost:8081) para gerar o token mediante digitação de usuário e senha. Após digitar usuário e senha o token é gerado e pode ser copiado para a requisição no Postman. Este token tem validade de uma hora.
+
+Após copiar o token para a requisição, clicar no botão send. Isto deve mostrar a resposta para a requisição, algo como o mostrado abaixo:
+	
+![](./Captura%20de%20tela%20de%202024-06-04%2019-50-37.png)
 
 
-Após todos os passos abra, o Postman, e no endpoint de sua preferência habilite a autenticação OAuth2.
+
 
 Para verificar os endpoints providos pelo cliente em questão (que no meu caso é chamado client, mas na documentação do keycloak é chamado myclient), acesse o seguinte endpoint: http://localhost:8080/realms/realm/.well-known/openid-configuration.
 
