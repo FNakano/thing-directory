@@ -180,7 +180,7 @@ Agora, caso você insira uma TD fora dos padrões, você receberá resposta 401,
 
 Para maiores detalhes aconselha-se olhar a documentação original nessa parte, presente em [DNS-SD registration](https://github.com/linksmart/thing-directory/wiki/Discovery-with-DNS-SD).
 
-Para habilitar o DNS/SD sem interfaces de publicação, modifique o *thing-direcory.json*, dessa maneira.
+Para habilitar o DNS/SD sem interfaces de publicação, modifique o *thing-direcory.json* desta maneira: (nota: a diferença está na chave `enabled` que foi mudada de `false` para `true`.
 
 ```json
 "dnssd": {
@@ -193,12 +193,54 @@ Para habilitar o DNS/SD sem interfaces de publicação, modifique o *thing-direc
   },
 ```
 
-Com isso, você habilitará o DNS/SD na sua rede. Confirme rodando a aplicação e vendo o log:
+Com isso, você habilitará o DNS/SD no thing-directory. Confirme rodando a aplicação e vendo o log:
 
 ```log
 DNS-SD: registering as "LinkSmart Thing Directory._wot._tcp.local.", subtype: _directory
 DNS-SD: publish interfaces not set. Will register to all interfaces with multicast support.
 ```
+
+**nota**: da documentação [DNS-SD registration](https://github.com/linksmart/thing-directory/wiki/Discovery-with-DNS-SD) , usei o comando `avahi-browse _directory._sub._wot._tcp --resolve`. A listagem segue na figura abaixo. Pela figura dá para imaginar que super.local:8081 permite acessar o thing directory, o que realmente ocorre e o navegador mostra uma página Web.
+
+![](./Captura%20de%20tela%20de%202024-06-12%2019-10-31.png)
+
+**nota**: DNS-SD depende de mDNS para funcionar. mDNS (Multicast DNS) pode precisar de configurações adicionais nos pontos de acesso wifi e/ou nos computadores da rede local. Por exemplo, no AP, configurar para ele encaminhar os pacotes mDNS e nos computadores checar se Avahi (LINUX), Bonjour (Mac) está funcionando (geralmente está senão a descoberta de impressoras e outros dispositivos sem fio não vai funcionar).
+
+**nota**: thing-directory, quando executado e configurado, faz mDNS e, quando terminado, envia um pacote de goodbye que faz Avahi desregistrar os serviços. O código de demonstração de mDNS para ESP32 (mDNS_Web_Server) não envia essa mensagem, então, mesmo que o ESP esteja desligado, o Avahi mantém o dispositivo como ativo em um cache. Referências: https://www.google.com/search?q=dnssd+esp32+example+explained&oq=dnssd+esp32+example+explained&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigAdIBCTE0NTcxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/mdns.html
+https://github.com/espressif/esp-protocols/tree/master/components/mdns
+https://docs.espressif.com/projects/esp-protocols/mdns/docs/latest/en/index.html
+https://www.google.com/search?q=esp32+arduino+mdns+class&oq=esp32+arduino+mdns+class&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigAdIBCTEzOTczajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+https://github.com/espressif/arduino-esp32/blob/master/libraries/ESPmDNS/src/ESPmDNS.cpp
+https://www.google.com/search?q=mdns+accept+wildcard&oq=mdns+accept+wildcard&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigAdIBCDgxOTRqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
+https://datatracker.ietf.org/doc/html/rfc6762
+https://www.google.com/search?q=MDNS+accept+wildcard+ESP32+ARDUINO&oq=MDNS+accept+wildcard+ESP32+ARDUINO&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigAdIBCTEyMTcxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+https://forum.arduino.cc/t/help-understanding-mdns-on-esp32/1026655
+http://0.0.0.0:8081/things
+https://www.google.com/search?q=avahi-browse+returning+disconnected+device&oq=avahi-browse+returning+disconnected+device&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigAdIBCTE3MTM5ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+https://stackoverflow.com/questions/5126413/stopping-the-avahi-service-and-return-a-list-of-elements
+https://www.ibm.com/docs/en/snips/4.6.0?topic=networking-using-avahi-command-line-programs-discover-services
+file:///home/fabio/Anota/Artigos/Computer%20Organization%20and%20Architecture%2010th%20-%20William%20Stallings.pdf
+https://www.google.com/search?q=mttf+exponential+distribution&sca_esv=3697c3e79dce3da7&ei=yuRpZuGRA7Df1sQPkoy7oAo&udm=&ved=0ahUKEwjhnrD61NaGAxWwr5UCHRLGDqQQ4dUDCBE&uact=5&oq=mttf+exponential+distribution&gs_lp=Egxnd3Mtd2l6LXNlcnAiHW10dGYgZXhwb25lbnRpYWwgZGlzdHJpYnV0aW9uMgYQABgWGB4yCBAAGKIEGIkFMggQABiABBiiBDIIEAAYgAQYogRIpooBUPovWICIAXACeAGQAQCYAbIBoAG6I6oBBDAuMzG4AQPIAQD4AQGYAh6gAvcgwgIKEAAYsAMY1gQYR8ICEBAAGIAEGLEDGEMYgwEYigXCAgUQABiABMICBhAAGAcYHsICBxAAGIAEGArCAggQABgWGAoYHsICBxAAGIAEGA3CAgYQABgNGB7CAgkQABiABBgTGA3CAggQABgTGBYYHsICCBAAGBMYDRgewgIKEAAYExgIGA0YHsICBxAhGKABGAqYAwCIBgGQBgiSBwQyLjI4oAf5jgE&sclient=gws-wiz-serp#ip=1
+https://www.atlassian.com/br/incident-management/kpis/common-metrics
+https://www.google.com/search?q=clear+mdns+cache+linux&sca_esv=3697c3e79dce3da7&ei=3uVpZt_fIYja1sQPh82Y8As&udm=&ved=0ahUKEwjfxpz-1daGAxUIrZUCHYcmBr4Q4dUDCBE&uact=5&oq=clear+mdns+cache+linux&gs_lp=Egxnd3Mtd2l6LXNlcnAiFmNsZWFyIG1kbnMgY2FjaGUgbGludXgyBxAAGIAEGA0yBhAAGA0YHjIGEAAYDRgeMgYQABgNGB4yBhAAGA0YHjIGEAAYDRgeMgYQABgNGB4yBhAAGA0YHjIGEAAYDRgeMgYQABgNGB5IihRQ9gdYkRFwAXgBkAEAmAGYAaAB2AaqAQMwLja4AQPIAQD4AQGYAgegAoAHwgIKEAAYsAMY1gQYR5gDAIgGAZAGCJIHAzEuNqAHoTY&sclient=gws-wiz-serp
+https://devconnected.com/how-to-flush-dns-cache-on-linux/
+https://www.google.com/search?q=avahi+cache&oq=avahi+cache+&gs_lcrp=EgZjaHJvbWUyCggAEEUYFhgeGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIICAMQABgWGB4yCAgEEAAYFhgeMggIBRAAGBYYHjIICAYQABgWGB4yCAgHEAAYFhgeMgoICBAAGA8YFhgeMgoICRAAGIAEGKIE0gEINzAzN2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8
+https://stackoverflow.com/questions/18388334/avahi-hostname-resolution-is-it-caching-somewhere
+https://github.com/linksmart/thing-directory/wiki/Discovery-with-DNS-SD
+http://super.local:8081/things
+https://www.google.com/search?q=mdns+message+server+is+down&oq=mdns+message+server+is+down&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIGCAMQIRgV0gEJMzY1NDFqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8
+https://github.com/espressif/esp-idf/issues/3660
+https://github.com/espressif/esp-idf/tree/master/components
+https://www.google.com/search?q=mdns+in+esp-idf&oq=mdns+in+esp-idf&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yCggCEAAYgAQYogQyBggDEEUYPDIGCAQQRRg80gEINDM5N2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8
+https://www.google.com/search?q=how+to+install+and+use+espressif+esp32+idf&oq=how+to+install+and+use+espressif+esp32+idf&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQIRigATIHCAIQIRigATIHCAMQIRigAdIBCTE2MDc5ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html
+https://www.google.com/search?q=mdns+in+windows&oq=mdns+in+windows&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTILCAEQABgNGBMYgAQyCwgCEAAYDRgTGIAEMgsIAxAAGA0YExiABDILCAQQABgNGBMYgAQyCwgFEAAYDRgTGIAEMgsIBhAAGA0YExiABDILCAcQABgNGBMYgAQyCwgIEAAYDRgTGIAEMgoICRAAGA0YExge0gEINDkzM2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8
+https://superuser.com/questions/1330027/how-to-enable-mdns-on-windows-10-build-17134
+https://www.ibm.com/docs/en/snips/4.6.0?topic=uzcn-using-bonjour-from-windows-command-line-discover-services
+
+  
+  
 **nota**: no fork de narcisoleedev (e neste também) o diretório `conf` contém os arquivos que configuram o serviço de diretório de coisas para aplicar os critérios de validação.
 
 ### HTTP Config
@@ -217,9 +259,9 @@ Para fins de teste, não modifiquei as configurações de HTTP da aplicação, m
     },
 ```
 
-### Autenticação
+### Autorização
 
-Essa parte deve-se prestar bastante atenção para habilitar a autenticação normalmente.
+Essa parte deve-se prestar bastante atenção para habilitar a autorização normalmente.
 
 Primeiro baixe o keycloak e instale conforme a documentação na maneira que você queira instalar.
 
