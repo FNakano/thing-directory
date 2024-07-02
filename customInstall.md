@@ -324,6 +324,11 @@ Rode a aplicação e o Keycloak para testar a autenticação.
 
 Após isso, se todos os passos foram seguidos, você deve receber a autorização e assim uma resposta 200.
 
+### Teste com Docker
+
+![](./Captura%20de%20tela%20de%202024-07-02%2014-08-07.png)
+
+
 ### Deploy
 
 *To be completed*

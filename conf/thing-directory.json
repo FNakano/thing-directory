@@ -26,7 +26,7 @@
       "certFile": "./tls/cert.pem"
     },
     "auth": {
-      "enabled": true,
+      "enabled": false,
       "provider": "keycloak",
       "providerURL": "http://localhost:8080/realms/myrealm",
       "clientID": "account",
